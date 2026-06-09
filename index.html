@@ -1,0 +1,650 @@
+<!-- UniLoop Demo — Campus Second-Hand Platform for International Students -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniLoop Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f8f9fa;
+      --surface: #ffffff;
+      --surface-strong: #f2f4f7;
+      --text: #121212;
+      --muted: #4f4f5c;
+      --primary: #ff6b35;
+      --primary-dark: #d54f1f;
+      --nav: #1a1a2e;
+      --shadow: 0 18px 50px rgba(26, 26, 46, 0.08);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+    .zh { font-family: 'Noto Sans SC', sans-serif; }
+    button, input, select, textarea { font: inherit; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    .app-shell { min-height: 100vh; }
+    .topbar { background: #fff; backdrop-filter: blur(18px); position: sticky; top: 0; z-index: 20; border-bottom: 1px solid #eef0f5; }
+    .topbar-inner { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; max-width: 1280px; margin: 0 auto; padding: 18px 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--nav); }
+    .brand-logo { height: 36px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+    .brand-logo img { height: 36px; width: auto; filter: hue-rotate(100deg) saturate(1.5) brightness(1.1); }
+    .brand-tagline { font-size: 9px; line-height: 1; color: var(--primary); opacity: 0.85; font-weight: 600; text-align: center; width: 36px; }
+    .brand-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--primary); display: none; }
+    .search-box { flex: 1; min-width: 220px; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 16px; background: var(--surface-strong); border: 1px solid #e5e7eb; }
+    .search-box input { border: none; outline: none; background: transparent; width: 100%; color: var(--text); }
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .pill { display: inline-flex; align-items: center; justify-content: center; padding: 10px 14px; border-radius: 999px; background: var(--surface); border: 1px solid #e5e7eb; color: var(--muted); cursor: pointer; transition: transform .2s ease, background .2s ease; }
+    .pill.active { background: var(--primary); border-color: transparent; color: #fff; }
+    .pill:hover { transform: translateY(-1px); }
+    .section-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 16px auto 0; max-width: 1280px; padding: 0 16px; }
+    .tab-button { border: none; border-radius: 16px; padding: 14px 12px; background: var(--surface); color: var(--muted); font-weight: 600; cursor: pointer; box-shadow: 0 12px 30px rgba(15,23,42,0.05); transition: background .2s ease, color .2s ease; }
+    .tab-button.active { background: var(--primary); color: #fff; }
+    .main-content { max-width: 1280px; margin: 24px auto; padding: 0 16px 32px; }
+    .section { display: none; }
+    .section.active { display: block; }
+    .section-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+    .section-title h2 { font-size: clamp(1.5rem, 2vw, 2.2rem); margin: 0; }
+    .section-title span { color: var(--muted); }
+    .card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    @media (min-width: 760px) { .card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (min-width: 1080px) { .card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    .card { background: var(--surface); border-radius: 22px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid rgba(15, 23, 42, 0.06); transition: transform .2s ease, box-shadow .2s ease; cursor: pointer; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 20px 55px rgba(15, 23, 42, 0.12); }
+    .card-image { position: relative; overflow: hidden; height: 156px; }
+    .card-image::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.24) 100%); }
+    .card-meta { position: absolute; top: 12px; left: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge { padding: 6px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: rgba(255,255,255,0.95); color: var(--nav); backdrop-filter: blur(10px); }
+    .bundle-badge { background: #ffe8da; color: #d15124; }
+    .video-mark { position: absolute; right: 12px; top: 12px; background: rgba(26,26,46,0.85); color: white; padding: 6px 8px; border-radius: 999px; font-size: 12px; display: flex; align-items: center; gap: 6px; }
+    .card-content { padding: 16px; }
+    .card-content h3 { margin: 0 0 8px; font-size: 1rem; line-height: 1.4; }
+    .card-content p { margin: 0; color: var(--muted); font-size: 0.94rem; }
+    .card-price { margin: 14px 0 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 700; }
+    .offer-button { width: 100%; margin-top: 14px; padding: 12px; border-radius: 16px; border: none; background: var(--primary); color: white; font-weight: 600; cursor: pointer; transition: transform .2s ease; }
+    .offer-button:hover { transform: translateY(-1px); }
+    .filtered-label { display: inline-flex; align-items: center; gap: 8px; font-size: 0.95rem; color: var(--muted); }
+    .form-card, .info-card, .small-card, .profile-card { background: var(--surface); border-radius: 24px; box-shadow: var(--shadow); padding: 24px; border: 1px solid rgba(15,23,42,0.06); }
+    .form-row { display: grid; gap: 16px; }
+    .form-row label { font-weight: 600; margin-bottom: 8px; display: block; color: var(--nav); }
+    .form-row input, .form-row select, .form-row textarea { width: 100%; border: 1px solid #e5e7eb; border-radius: 16px; background: var(--surface-strong); padding: 14px 16px; outline: none; color: var(--text); }
+    .form-row textarea { min-height: 110px; resize: vertical; }
+    .upload-area { border: 2px dashed #e5e7eb; border-radius: 22px; padding: 28px; text-align: center; background: #fbfbfb; cursor: pointer; }
+    .upload-area:hover { border-color: var(--primary); }
+    .upload-area p { margin: 0; color: var(--muted); }
+    .button-primary { border: none; border-radius: 18px; padding: 14px 18px; background: var(--primary); color: white; font-weight: 700; cursor: pointer; box-shadow: 0 18px 40px rgba(255,107,53,0.2); }
+    .button-secondary { border: 1px solid #dde1e7; background: white; color: var(--nav); }
+    .button-secondary:hover { background: #f8f8fb; }
+    .split-grid { display: grid; gap: 16px; }
+    @media (min-width: 760px) { .split-grid { grid-template-columns: 1.2fr .8fr; } }
+    .mini-badge { display: inline-flex; align-items: center; gap: 6px; padding: 7px 10px; border-radius: 999px; background: #f8f4ee; color: #8a5a40; font-size: 0.9rem; }
+    .request-list { display: grid; gap: 16px; }
+    .request-card { display: grid; gap: 12px; padding: 18px; background: var(--surface); border-radius: 22px; border: 1px solid rgba(15,23,42,0.05); box-shadow: var(--shadow); }
+    .request-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .request-header h3 { margin: 0; font-size: 1rem; }
+    .request-info { color: var(--muted); font-size: 0.95rem; }
+    .request-button { border: none; border-radius: 16px; padding: 12px 14px; background: var(--primary); color: white; font-weight: 700; cursor: pointer; }
+    .profile-header { display: grid; gap: 18px; padding: 28px; background: var(--primary); color: white; border-radius: 28px; box-shadow: 0 24px 70px rgba(255,107,53,0.18); }
+    .profile-summary { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+    .avatar-large { width: 84px; height: 84px; border-radius: 26px; background: #fff; display: grid; place-items: center; color: var(--primary); font-size: 2rem; font-weight: 700; }
+    .profile-name { display: flex; flex-direction: column; gap: 6px; }
+    .profile-name h3 { margin: 0; font-size: 1.6rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .stat-card { background: rgba(255,255,255,0.16); border-radius: 18px; padding: 18px; text-align: center; }
+    .stat-card strong { display:block; font-size: 1.4rem; }
+    .profile-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+    .profile-tab { border: none; border-radius: 16px; padding: 14px; background: rgba(255,255,255,0.16); color: white; font-weight: 700; cursor: pointer; }
+    .profile-tab.active { background: white; color: var(--nav); }
+    .history-list { display: grid; gap: 14px; margin-top: 18px; }
+    .history-item { display: grid; gap: 8px; padding: 18px; background: var(--surface); border-radius: 20px; border: 1px solid rgba(15,23,42,0.06); }
+    .detail-card { display: grid; gap: 18px; }
+    .detail-image { border-radius: 28px; overflow: hidden; position: relative; height: 310px; background-size: cover; background-position: center; background-repeat: no-repeat; }
+    .detail-image::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.2) 100%); }
+    .detail-bar { display: flex; flex-direction: column; gap: 10px; }
+    .seller-box { display: flex; align-items: center; gap: 12px; padding: 18px; background: var(--surface-strong); border-radius: 22px; }
+    .seller-avatar { width: 52px; height: 52px; border-radius: 18px; background: #ffedd8; display: grid; place-items: center; color: var(--primary-dark); font-weight: 700; }
+    .seller-info strong { display: block; font-size: 1rem; }
+    .escrow-banner { display: flex; align-items: center; gap: 10px; padding: 16px 18px; border-radius: 18px; background: #fff4e9; color: #8a4f22; border: 1px solid #ffd8c1; }
+    .map-placeholder { border-radius: 24px; overflow: hidden; background: #e8f0fd; min-height: 190px; display: grid; place-items: center; color: #2f4a7d; text-align: center; padding: 24px; }
+    .detail-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .input-modal, .chat-modal { position: fixed; inset: 0; background: rgba(15,23,42,0.45); display: none; align-items: center; justify-content: center; padding: 24px; z-index: 30; }
+    .modal-inner { width: min(520px, 100%); background: white; border-radius: 24px; padding: 24px; box-shadow: var(--shadow); }
+    .modal-inner h3 { margin-top: 0; }
+    .modal-close { position: absolute; top: 14px; right: 14px; border: none; background: transparent; color: var(--muted); font-size: 1.2rem; cursor: pointer; }
+    .modal-actions { margin-top: 18px; display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
+    .modal.show, .chat-modal.show { display: flex; }
+    .chat-box { display: grid; gap: 16px; }
+    .chat-message { max-width: 82%; padding: 14px 16px; border-radius: 20px; background: #f4f5f7; color: var(--nav); }
+    .chat-message.seller { background: #fff0eb; justify-self: end; }
+    .video-preview { position: relative; border-radius: 24px; overflow: hidden; min-height: 190px; background: #111827; color: white; display: grid; place-items: center; }
+    .video-preview::after { content: 'VIDEO PREVIEW AVAILABLE'; position: absolute; bottom: 16px; left: 16px; background: rgba(0,0,0,0.42); padding: 8px 12px; border-radius: 999px; font-size: 0.84rem; letter-spacing: .4px; }
+    .video-preview svg { width: 56px; height: 56px; }
+    .info-pill { display: inline-flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 999px; background: #f4f5f7; color: var(--muted); font-size: 0.95rem; }
+    .loading-dot { width: 10px; height: 10px; border-radius: 50%; background: white; animation: pulse 1s infinite ease-in-out; }
+    .loading-row { display: inline-flex; gap: 6px; align-items: center; }
+    @keyframes pulse { 0%, 100% { opacity: .4; transform: scale(.9); } 50% { opacity: 1; transform: scale(1.15); } }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand" role="banner">
+        <div class="brand-logo">
+          <img src="logo.png" alt="UniLoop Logo" />
+          <div class="brand-tagline zh">连接校园<br/>无限生活</div>
+        </div>
+        <div>
+          <div id="brandText" style="margin-left: 8px;">UniLoop</div>
+          <div style="font-size:.86rem;color:#6b7280;">Campus second-hand for international students</div>
+        </div>
+      </div>
+      <div class="search-box">
+        <span aria-hidden="true">🔍</span>
+        <input id="searchInput" type="search" placeholder="Search monitors, textbooks, carpool..." aria-label="Search listings" />
+      </div>
+      <div class="nav-actions">
+        <button id="langToggle" class="pill" type="button">中文</button>
+        <button class="pill" type="button" aria-label="Notifications">🔔</button>
+        <div class="pill" style="padding:10px;"><span style="width:28px;height:28px;border-radius:50%;display:inline-grid;place-items:center;background:#ffedd8;color:#d54f1f;">A</span></div>
+      </div>
+    </div>
+    <div class="section-tabs" role="tablist">
+      <button class="tab-button active" data-section="home" type="button">Home</button>
+      <button class="tab-button" data-section="post" type="button">Post</button>
+      <button class="tab-button" data-section="wishlist" type="button">Wishlist</button>
+      <button class="tab-button" data-section="detail" type="button">Detail</button>
+      <button class="tab-button" data-section="profile" type="button">Profile</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section id="home" class="section active" aria-labelledby="homeTitle">
+      <div class="section-title">
+        <div>
+          <h2 id="homeTitle">Discover nearby campus deals</h2>
+          <span id="homeSubtitle">Sorted by closest distance</span>
+        </div>
+        <button id="postButtonTop" class="button-primary" type="button">Post a listing</button>
+      </div>
+      <div id="filterChips" class="category-chips" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:22px;"></div>
+      <div class="card-grid" id="productGrid"></div>
+    </section>
+
+    <section id="post" class="section" aria-labelledby="postTitle">
+      <div class="section-title">
+        <div>
+          <h2 id="postTitle">Create a new listing</h2>
+          <span id="postSubtitle">AI auto-fill makes posting faster</span>
+        </div>
+      </div>
+      <div class="form-card">
+        <div class="form-row">
+          <div class="upload-area" id="uploadArea">
+            <p>Drag & drop photo here</p>
+            <p style="margin-top:8px;color:#9ca3af;">(non-functional demo upload)</p>
+          </div>
+          <div>
+            <label for="itemTitle" id="titleLabel">Title</label>
+            <input id="itemTitle" placeholder="e.g. Sony Monitor 24-inch" />
+          </div>
+          <div>
+            <label for="categorySelect" id="categoryLabel">Category</label>
+            <select id="categorySelect">
+              <option>Electronics</option>
+              <option>Textbooks</option>
+              <option>Furniture</option>
+              <option>Clothing</option>
+              <option>Services</option>
+              <option>Carpool</option>
+            </select>
+          </div>
+          <div class="split-grid">
+            <div>
+              <label for="priceInput" id="priceLabel">Price (RM)</label>
+              <input id="priceInput" type="number" placeholder="e.g. 180" />
+            </div>
+            <div>
+              <label for="conditionSelect" id="conditionLabel">Condition</label>
+              <select id="conditionSelect">
+                <option>New</option>
+                <option>Like New</option>
+                <option>Good</option>
+                <option>Fair</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="descriptionInput" id="descLabel">Description</label>
+            <textarea id="descriptionInput" placeholder="Write a short description about the item..."></textarea>
+          </div>
+          <div class="info-card" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;"> 
+              <input id="dormLocation" type="checkbox" style="width:18px;height:18px;" />
+              <span id="locationLabel">Use my dorm location</span>
+            </label>
+            <span class="mini-badge">Map preview</span>
+          </div>
+          <button id="aiButton" class="button-primary" type="button">📷 AI Detect Item</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="wishlist" class="section" aria-labelledby="wishlistTitle">
+      <div class="section-title">
+        <div>
+          <h2 id="wishlistTitle">Buyer request board</h2>
+          <span id="wishlistSubtitle">Help match demand from international students</span>
+        </div>
+        <button id="postWishlist" class="button-primary" type="button">Post a Wishlist</button>
+      </div>
+      <div class="request-list" id="requestBoard"></div>
+    </section>
+
+    <section id="detail" class="section" aria-labelledby="detailTitle">
+      <div class="section-title">
+        <div>
+          <h2 id="detailTitle">Listing details</h2>
+          <span id="detailSubtitle">Secure exchange with UniLoop Escrow</span>
+        </div>
+      </div>
+      <div class="detail-card">
+        <div class="detail-image" id="detailImage"></div>
+        <div class="detail-bar">
+          <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+            <div><span class="badge" id="detailCategory"></span></div>
+            <div class="info-pill" id="detailDistance"></div>
+            <div class="info-pill" id="detailCondition"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;">
+            <div>
+              <h2 id="detailTitleText" style="margin:0;font-size:clamp(1.7rem,2.4vw,2.6rem);line-height:1.05;"></h2>
+              <p id="detailTitleCN" class="zh" style="margin:8px 0 0;color:var(--muted);"></p>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:2rem;font-weight:700;color:var(--primary-dark);">RM <span id="detailPrice"></span></div>
+              <div style="color:var(--muted);margin-top:6px;">Campus verified</div>
+            </div>
+          </div>
+        </div>
+        <div class="video-preview" id="videoPreview" style="display:none;">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="32" cy="32" r="30" fill="rgba(255,255,255,0.14)"/><path d="M26 22l18 10-18 10V22z" fill="white"/></svg>
+        </div>
+        <div class="seller-box">
+          <div class="seller-avatar" id="sellerAvatar">S</div>
+          <div class="seller-info">
+            <strong id="sellerName">UniLoop Seller</strong>
+            <span id="sellerStatus">UKM Verified Seller</span>
+          </div>
+          <div class="mini-badge">Verified</div>
+        </div>
+        <div class="escrow-banner">
+          <span>🔒</span>
+          <div>Payment protected by UniLoop Escrow — funds released only after you confirm receipt</div>
+        </div>
+        <div class="map-placeholder" id="mapPlaceholder">Google Maps static preview<br/>Seller approximate area</div>
+        <div class="detail-actions">
+          <button id="detailOffer" class="button-primary">Make an Offer</button>
+          <button id="detailChat" class="button-secondary" type="button">Message Seller</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="profile" class="section" aria-labelledby="profileTitle">
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-summary">
+            <div class="avatar-large">A</div>
+            <div class="profile-name">
+              <h3 id="profileName">Alice Lim</h3>
+              <div id="profileBadge" class="mini-badge">UKM Student ✓</div>
+            </div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card"><strong>12</strong>Sold</div>
+            <div class="stat-card"><strong>4.9★</strong>Rating</div>
+            <div class="stat-card"><strong>2023</strong>Member since</div>
+          </div>
+          <div class="profile-tabs">
+            <button class="profile-tab active" data-profile="listings" type="button">My Listings</button>
+            <button class="profile-tab" data-profile="history" type="button">Purchase History</button>
+          </div>
+        </div>
+        <div class="history-list" id="profileContent"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="input-modal" id="offerModal" role="dialog" aria-modal="true" aria-labelledby="offerTitle">
+    <div class="modal-inner">
+      <button class="modal-close" id="closeOffer">×</button>
+      <h3 id="offerTitle">Make an Offer</h3>
+      <p style="color:var(--muted);">Enter your offer price for this listing.</p>
+      <div class="form-row" style="margin-top:18px;">
+        <label for="offerInput">Your offer (RM)</label>
+        <input id="offerInput" type="number" placeholder="e.g. 190" />
+      </div>
+      <div class="modal-actions">
+        <button class="button-secondary" id="cancelOffer" type="button">Cancel</button>
+        <button class="button-primary" id="submitOffer" type="button">Send Offer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-modal" id="chatModal" role="dialog" aria-modal="true" aria-labelledby="chatTitle">
+    <div class="modal-inner" style="position:relative;">
+      <button class="modal-close" id="closeChat">×</button>
+      <h3 id="chatTitle">Chat with Seller</h3>
+      <div class="chat-box">
+        <div class="chat-message">Hi! Is the item still available?</div>
+        <div class="chat-message seller">Yes, it is available. You can view it this weekend.</div>
+        <div class="chat-message">Can we meet near the campus library?</div>
+        <div class="chat-message seller">Sure, I can meet there after 5pm.</div>
+      </div>
+      <div class="modal-actions" style="margin-top:22px;justify-content:flex-start;">
+        <button class="button-secondary" id="closeChatBottom" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const labels = {
+    en: {
+      home: 'Home', post: 'Post', wishlist: 'Wishlist', detail: 'Detail', profile: 'Profile', postListing: 'Post a listing', buyerBoard: 'Buyer request board', myListings: 'My Listings', purchaseHistory: 'Purchase History', searchPlaceholder: 'Search monitors, textbooks, carpool...', homeTitle: 'Discover nearby campus deals', homeSubtitle: 'Sorted by closest distance', postTitle: 'Create a new listing', postSubtitle: 'AI auto-fill makes posting faster', wishlistTitle: 'Buyer request board', wishlistSubtitle: 'Help match demand from international students', detailTitle: 'Listing details', detailSubtitle: 'Secure exchange with UniLoop Escrow', profileTitle: 'My UniLoop Profile', profileBadge: 'UKM Student ✓', titleLabel: 'Title', categoryLabel: 'Category', priceLabel: 'Price (RM)', conditionLabel: 'Condition', descLabel: 'Description', locationLabel: 'Use my dorm location', aiButton: '📷 AI Detect Item', postButton: 'Post a listing', requestBoard: 'Post a Wishlist', offerButton: 'Make an Offer', messageButton: 'Message Seller', escrowText: 'Payment protected by UniLoop Escrow — funds released only after you confirm receipt', videoLabel: 'VIDEO PREVIEW AVAILABLE', requestHelp: 'I Have This', },
+    zh: {
+      home: '首页', post: '发布', wishlist: '心愿单', detail: '详情', profile: '我的', postListing: '发布商品', buyerBoard: '买家求购板', myListings: '我的刊登', purchaseHistory: '购买记录', searchPlaceholder: '搜索显示器、课本、拼车...', homeTitle: '发现邻近校园好物', homeSubtitle: '按距离优先排序', postTitle: '创建新刊登', postSubtitle: 'AI 自动填充让发布更快', wishlistTitle: '买家求购板', wishlistSubtitle: '帮国际生快速匹配需求', detailTitle: '商品详情', detailSubtitle: 'UniLoop 托管保障交易安全', profileTitle: '我的 UniLoop 个人主页', profileBadge: 'UKM 学生 ✓', titleLabel: '标题', categoryLabel: '类别', priceLabel: '价格 (RM)', conditionLabel: '成色', descLabel: '描述', locationLabel: '使用宿舍位置', aiButton: '📷 AI 识别商品', postButton: '发布商品', requestBoard: '发布求购', offerButton: '出价', messageButton: '联系卖家', escrowText: 'UniLoop 托管保护付款 — 收货确认后放款', videoLabel: '视频预览可用', requestHelp: '我有这个', }
+  };
+
+  const products = [
+    { id: 'p1', image: 'https://picsum.photos/400/260?random=1', title: 'Sony 24" Monitor (Full HD)', titleCN: '索尼24寸显示器', price: 200, category: 'Electronics', distance: '150m', condition: 'Good', video: true, verified: true },
+    { id: 'p2', image: 'https://picsum.photos/400/260?random=2', title: 'STPM Chemistry Textbook Set', titleCN: 'STPM化学课本套装', price: 35, category: 'Textbooks', distance: '300m', condition: 'Fair', video: false, verified: true },
+    { id: 'p3', image: 'https://picsum.photos/400/260?random=3', title: 'Canon EOS M50 Camera', titleCN: '佳能微单相机', price: 850, category: 'Electronics', distance: '500m', condition: 'Like New', video: true, verified: true },
+    { id: 'p4', image: 'https://picsum.photos/400/260?random=4', title: 'Whole-flat Transfer Bundle 🏠', titleCN: '整套家具打包转让', price: 600, category: 'Furniture', distance: '200m', condition: 'Good', video: false, verified: true, bundle: true },
+    { id: 'p5', image: 'https://picsum.photos/400/260?random=5', title: 'Foldable Study Desk', titleCN: '折叠书桌', price: 80, category: 'Furniture', distance: '1.2km', condition: 'Good', video: false, verified: false },
+    { id: 'p6', image: 'https://picsum.photos/400/260?random=6', title: 'Freelance Video Editing Service', titleCN: '视频剪辑服务', price: 50, category: 'Services', distance: 'On campus', condition: '', video: false, verified: true },
+    { id: 'p7', image: 'https://picsum.photos/400/260?random=7', title: 'Carpool to KLIA Airport (Fri eve)', titleCN: '周五拼车去吉隆坡机场', price: 25, category: 'Carpool', distance: 'On campus', condition: '', video: false, verified: true },
+    { id: 'p8', image: 'https://picsum.photos/400/260?random=8', title: 'Mountain Bicycle', titleCN: '山地自行车', price: 180, category: 'Clothing', distance: '800m', condition: 'Fair', video: false, verified: false },
+  ];
+
+  const categories = ['All', 'Electronics', 'Textbooks', 'Furniture', 'Clothing', 'Services', 'Carpool'];
+  const requests = [
+    { id: 'r1', item: 'MacBook charger', budget: 'RM 80', time: '2h ago' },
+    { id: 'r2', item: 'Second-hand piano keyboard', budget: 'RM 120', time: '5h ago' },
+    { id: 'r3', item: 'Shared dorm room from July', budget: 'RM 250', time: '1d ago' },
+    { id: 'r4', item: 'English tutoring for foundation', budget: 'RM 40/hour', time: '3d ago' }
+  ];
+
+  const listingHistory = [
+    { title: 'AirPods Pro 2', status: 'Sold', detail: 'RM 420', time: '2 weeks ago' },
+    { title: 'Portable mini fridge', status: 'Available', detail: 'RM 180', time: '3 days ago' },
+    { title: 'Graphic design service', status: 'Booked', detail: 'RM 60/hr', time: '1 day ago' }
+  ];
+  const purchaseHistory = [
+    { title: 'STPM Chemistry Textbook Set', detail: 'RM 35', time: '4 days ago' },
+    { title: 'KLIA Carpool seat', detail: 'RM 25', time: '1 week ago' }
+  ];
+
+  let currentLanguage = 'en';
+  let currentCategory = 'All';
+  let filteredProducts = [];
+  let activeSection = 'home';
+  let activeProfileTab = 'listings';
+  let currentDetailProduct = products[0];
+
+  const sectionButtons = document.querySelectorAll('.tab-button');
+  const sections = document.querySelectorAll('.section');
+  const productGrid = document.getElementById('productGrid');
+  const filterChips = document.getElementById('filterChips');
+  const langToggle = document.getElementById('langToggle');
+  const searchInput = document.getElementById('searchInput');
+  const postButtonTop = document.getElementById('postButtonTop');
+  const postWishlist = document.getElementById('postWishlist');
+  const requestBoard = document.getElementById('requestBoard');
+  const profileContent = document.getElementById('profileContent');
+  const profileTabs = document.querySelectorAll('.profile-tab');
+  const detailSection = document.getElementById('detail');
+  const offerModal = document.getElementById('offerModal');
+  const chatModal = document.getElementById('chatModal');
+  const detailOffer = document.getElementById('detailOffer');
+  const detailChat = document.getElementById('detailChat');
+  const closeOffer = document.getElementById('closeOffer');
+  const cancelOffer = document.getElementById('cancelOffer');
+  const submitOffer = document.getElementById('submitOffer');
+  const closeChat = document.getElementById('closeChat');
+  const closeChatBottom = document.getElementById('closeChatBottom');
+  const aiButton = document.getElementById('aiButton');
+  const uploadArea = document.getElementById('uploadArea');
+
+  const elementMap = {
+    brandText: document.getElementById('brandText'),
+    homeTitle: document.getElementById('homeTitle'),
+    homeSubtitle: document.getElementById('homeSubtitle'),
+    postTitle: document.getElementById('postTitle'),
+    postSubtitle: document.getElementById('postSubtitle'),
+    wishlistTitle: document.getElementById('wishlistTitle'),
+    wishlistSubtitle: document.getElementById('wishlistSubtitle'),
+    detailTitle: document.getElementById('detailTitle'),
+    detailSubtitle: document.getElementById('detailSubtitle'),
+    profileTitle: document.getElementById('profileTitle'),
+    profileBadge: document.getElementById('profileBadge'),
+    titleLabel: document.getElementById('titleLabel'),
+    categoryLabel: document.getElementById('categoryLabel'),
+    priceLabel: document.getElementById('priceLabel'),
+    conditionLabel: document.getElementById('conditionLabel'),
+    descLabel: document.getElementById('descLabel'),
+    locationLabel: document.getElementById('locationLabel'),
+    aiButton: aiButton,
+    postButtonTop: postButtonTop,
+    postWishlist: postWishlist,
+    detailOffer: detailOffer,
+    detailChat: detailChat,
+    escrowText: document.querySelector('.escrow-banner div'),
+    videoPreview: document.getElementById('videoPreview'),
+    detailCategory: document.getElementById('detailCategory'),
+    detailDistance: document.getElementById('detailDistance'),
+    detailCondition: document.getElementById('detailCondition'),
+    detailTitleText: document.getElementById('detailTitleText'),
+    detailTitleCN: document.getElementById('detailTitleCN'),
+    detailPrice: document.getElementById('detailPrice'),
+    sellerName: document.getElementById('sellerName'),
+    sellerStatus: document.getElementById('sellerStatus'),
+    sellerAvatar: document.getElementById('sellerAvatar'),
+    mapPlaceholder: document.getElementById('mapPlaceholder')
+  };
+
+  function parseDistance(value) {
+    if (value === 'On campus') return 0;
+    const num = parseFloat(value);
+    if (value.includes('km')) return num * 1000;
+    return num;
+  }
+
+  function sortProducts(list) {
+    return [...list].sort((a, b) => parseDistance(a.distance) - parseDistance(b.distance));
+  }
+
+  function renderCategoryChips() {
+    filterChips.innerHTML = '';
+    categories.forEach(category => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'pill' + (category === currentCategory ? ' active' : '');
+      chip.textContent = category;
+      chip.addEventListener('click', () => { currentCategory = category; renderProducts(); });
+      filterChips.appendChild(chip);
+    });
+  }
+
+  function renderProducts() {
+    const query = searchInput.value.trim().toLowerCase();
+    filteredProducts = sortProducts(products).filter(product => {
+      const matchesCategory = currentCategory === 'All' || product.category === currentCategory;
+      const matchesSearch = query === '' || product.title.toLowerCase().includes(query) || product.titleCN.includes(query);
+      return matchesCategory && matchesSearch;
+    });
+    productGrid.innerHTML = filteredProducts.map(product => {
+      const verified = product.verified ? `<span class="badge">Verified</span>` : '';
+      const bundleLabel = product.bundle ? `<span class="badge bundle-badge">Bundle</span>` : '';
+      const videoLabel = product.video ? `<div class="video-mark">▶ Video</div>` : '';
+      return `
+        <article class="card" data-id="${product.id}">
+          <div class="card-image"><img src="${product.image}" alt="${product.title}" loading="lazy" />${videoLabel}</div>
+          <div class="card-content">
+            <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;">${verified}${bundleLabel}</div>
+            <h3>${product.title}</h3>
+            <p class="zh" style="margin-top:4px;">${product.titleCN}</p>
+            <div class="card-price"><span>RM ${product.price}</span><span>${product.distance}</span></div>
+            <button class="offer-button" type="button">Make an Offer</button>
+          </div>
+        </article>`;
+    }).join('');
+    document.querySelectorAll('.card').forEach(card => card.addEventListener('click', event => {
+      if (event.target.closest('button')) return;
+      const id = card.dataset.id;
+      openDetail(id);
+    }));
+    document.querySelectorAll('.offer-button').forEach(button => button.addEventListener('click', event => {
+      event.stopPropagation();
+      const id = event.target.closest('.card').dataset.id;
+      openDetail(id);
+      setTimeout(() => openOfferModal(), 120);
+    }));
+  }
+
+  function renderRequests() {
+    requestBoard.innerHTML = requests.map(req => `
+      <article class="request-card">
+        <div class="request-header"><h3>${req.item}</h3><span>${req.time}</span></div>
+        <div class="request-info">Budget: ${req.budget}</div>
+        <button class="request-button" type="button">${labels[currentLanguage].requestHelp}</button>
+      </article>
+    `).join('');
+  }
+
+  function renderProfile() {
+    profileContent.innerHTML = activeProfileTab === 'listings'
+      ? listingHistory.map(item => `
+          <div class="history-item"><strong>${item.title}</strong><span>${item.detail}</span><span style="color:var(--muted);">${item.status} · ${item.time}</span></div>`).join('')
+      : purchaseHistory.map(item => `
+          <div class="history-item"><strong>${item.title}</strong><span>${item.detail}</span><span style="color:var(--muted);">${item.time}</span></div>`).join('');
+  }
+
+  function openSection(section) {
+    activeSection = section;
+    sections.forEach(sec => sec.classList.toggle('active', sec.id === section));
+    sectionButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.section === section));
+    if (section === 'wishlist') renderRequests();
+    if (section === 'profile') renderProfile();
+    if (section === 'home') renderProducts();
+  }
+
+  function openDetail(productId) {
+    const product = products.find(p => p.id === productId) || products[0];
+    currentDetailProduct = product;
+    elementMap.detailCategory.textContent = product.category;
+    elementMap.detailDistance.textContent = product.distance;
+    elementMap.detailCondition.textContent = product.condition ? product.condition : 'Service';
+    elementMap.detailTitleText.textContent = product.title;
+    elementMap.detailTitleCN.textContent = product.titleCN;
+    elementMap.detailPrice.textContent = product.price;
+    elementMap.sellerName.textContent = product.bundle ? 'Campus Bundle Host' : 'UniLoop Seller';
+    elementMap.sellerStatus.textContent = product.verified ? 'UKM Verified Seller' : 'Campus Seller';
+    elementMap.sellerAvatar.textContent = product.sellerInitials || product.title.charAt(0);
+    elementMap.mapPlaceholder.innerHTML = 'Google Maps static preview<br/>Seller approximate area';
+    document.getElementById('detailImage').style.backgroundImage = `url('${product.image}')`;
+    if (product.video) elementMap.videoPreview.style.display = 'grid'; else elementMap.videoPreview.style.display = 'none';
+    openSection('detail');
+  }
+
+  function openOfferModal() { offerModal.classList.add('show'); }
+  function closeOfferModal() { offerModal.classList.remove('show'); }
+  function openChatModal() { chatModal.classList.add('show'); }
+  function closeChatModal() { chatModal.classList.remove('show'); }
+
+  function updateLanguage() {
+    const text = labels[currentLanguage];
+    document.querySelector('[data-section="home"]').textContent = text.home;
+    document.querySelector('[data-section="post"]').textContent = text.post;
+    document.querySelector('[data-section="wishlist"]').textContent = text.wishlist;
+    document.querySelector('[data-section="detail"]').textContent = text.detail;
+    document.querySelector('[data-section="profile"]').textContent = text.profile;
+    elementMap.homeTitle.textContent = text.homeTitle;
+    elementMap.homeSubtitle.textContent = text.homeSubtitle;
+    elementMap.postTitle.textContent = text.postTitle;
+    elementMap.postSubtitle.textContent = text.postSubtitle;
+    elementMap.wishlistTitle.textContent = text.wishlistTitle;
+    elementMap.wishlistSubtitle.textContent = text.wishlistSubtitle;
+    elementMap.detailTitle.textContent = text.detailTitle;
+    elementMap.detailSubtitle.textContent = text.detailSubtitle;
+    elementMap.profileTitle.textContent = text.profileTitle;
+    elementMap.profileBadge.textContent = text.profileBadge;
+    elementMap.titleLabel.textContent = text.titleLabel;
+    elementMap.categoryLabel.textContent = text.categoryLabel;
+    elementMap.priceLabel.textContent = text.priceLabel;
+    elementMap.conditionLabel.textContent = text.conditionLabel;
+    elementMap.descLabel.textContent = text.descLabel;
+    elementMap.locationLabel.textContent = text.locationLabel;
+    elementMap.aiButton.textContent = text.aiButton;
+    postButtonTop.textContent = text.postButton;
+    postWishlist.textContent = text.requestBoard;
+    detailOffer.textContent = text.offerButton;
+    detailChat.textContent = text.messageButton;
+    document.querySelector('.escrow-banner div').textContent = text.escrowText;
+    searchInput.placeholder = text.searchPlaceholder;
+    langToggle.textContent = currentLanguage === 'en' ? '中文' : 'EN';
+  }
+
+  function init() {
+    renderCategoryChips();
+    renderProducts();
+    renderRequests();
+    renderProfile();
+    openSection('home');
+    updateLanguage();
+  }
+
+  sectionButtons.forEach(button => button.addEventListener('click', () => openSection(button.dataset.section)));
+  langToggle.addEventListener('click', () => { currentLanguage = currentLanguage === 'en' ? 'zh' : 'en'; updateLanguage(); });
+  searchInput.addEventListener('input', () => renderProducts());
+  postButtonTop.addEventListener('click', () => openSection('post'));
+  postWishlist.addEventListener('click', () => openSection('wishlist'));
+  profileTabs.forEach(tab => tab.addEventListener('click', () => {
+    profileTabs.forEach(btn => btn.classList.toggle('active', btn === tab));
+    activeProfileTab = tab.dataset.profile; renderProfile();
+  }));
+  detailOffer.addEventListener('click', openOfferModal);
+  detailChat.addEventListener('click', openChatModal);
+  closeOffer.addEventListener('click', closeOfferModal);
+  cancelOffer.addEventListener('click', closeOfferModal);
+  submitOffer.addEventListener('click', () => { closeOfferModal(); alert('Offer submitted!'); });
+  closeChat.addEventListener('click', closeChatModal);
+  closeChatBottom.addEventListener('click', closeChatModal);
+  offerModal.addEventListener('click', event => { if (event.target === offerModal) closeOfferModal(); });
+  chatModal.addEventListener('click', event => { if (event.target === chatModal) closeChatModal(); });
+  aiButton.addEventListener('click', () => {
+    const original = aiButton.textContent;
+    aiButton.disabled = true;
+    aiButton.innerHTML = '<span class="loading-row"><span class="loading-dot"></span><span class="loading-dot"></span><span class="loading-dot"></span></span> Loading...';
+    setTimeout(() => {
+      document.getElementById('itemTitle').value = 'Sony Monitor 24-inch';
+      document.getElementById('categorySelect').value = 'Electronics';
+      document.getElementById('priceInput').value = '200';
+      document.getElementById('conditionSelect').value = 'Good';
+      document.getElementById('descriptionInput').value = 'Full HD monitor in good condition, perfect for study and gaming.';
+      aiButton.disabled = false;
+      aiButton.textContent = original;
+    }, 1500);
+  });
+  uploadArea.addEventListener('click', () => { alert('Demo upload area — drag & drop is non-functional.'); });
+
+  init();
+</script>
+</body>
+</html>
